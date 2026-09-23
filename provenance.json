@@ -1,0 +1,28 @@
+{
+  "checkpoint_sha256": "e36e936f02ee5b4a38fd7e5b681e40a23f539a4a5e1e0c6e0908baa4a44a07d5",
+  "checkpoint_epoch": 226,
+  "baseline_state_entries": 310,
+  "equivalence_max_absolute_errors": {
+    "heads_0": 0.0,
+    "heads_1": 0.0,
+    "reverse_heads_0": 0.0,
+    "reverse_heads_1": 0.0,
+    "features": 0.0
+  },
+  "mask_auxiliary_encoder_gradient_zero": true,
+  "preprocessing_and_labels_exact": true,
+  "full_training_reproduced": false,
+  "source_hashes": {
+    "frequency.py": "840600d894e551280ba41275a9c5329c297eda566db842f7bfe37c55926021f5",
+    "model.py": "badf665891e1c3253bc2f2fe99a171d19f3daa76aca733eb354e7aa0d8b7421f",
+    "spatial_attention.py": "cca19ad7e808308eb419842a188983b09ee791df3af436752e5bec8e31f491bc",
+    "losses.py": "1279fd58dca802a5dbbe5595472530126af45472e29733612423f62aeb4ac2c5",
+    "backbone.py": "4111c00743077a8abe74b9bb00135ca363235259db51e657f41210c511882962",
+    "data.py": "5d9967100f773ea0272f68a48fd33182248f7eb8063b341ec18a15da3d5c22ae",
+    "metrics.py": "067691c1df1ea1bf72c180c0a74315d46c90c3354f9cc7e148bdd7ada727fa01",
+    "inference.py": "344d85b48863251199a74e3aff7f1426187518d8fd8a69d371d0a36eff530471",
+    "train.py": "afd3eeee956bbf71b55aa6b7ec37b0465a6a85daa57ff2b1c462fcd33a548443",
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "correlation.py": "b55a1ddf33dcef6c07a0b9836420fe4a90d3d47e50ef3c678b9e051243845408"
+  }
+}
