@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*.pt
+*.pth
+*.h5
+*.mat
+runs/
+inference/
+outputs/
+checkpoints/
