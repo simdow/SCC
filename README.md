@@ -1,6 +1,6 @@
-# Ours-StructAwareTemporal
+# SCC-Net
 
-This release contains the reusable model, training loop, dataset adapter, loss definitions, and full-sequence inference entry point for Ours-StructAwareTemporal.
+This release contains the reusable model, training loop, dataset adapter, loss definitions, and full-sequence inference entry point for SCC-Net.
 
 ## Layout
 
@@ -8,7 +8,7 @@ This release contains the reusable model, training loop, dataset adapter, loss d
 - `src/train.py`: training and validation entry point.
 - `src/inference.py`: sliding-window full-sequence inference.
 - `src/data.py`: TUS-REC-style H5 reader and pose conversion.
-- `src/losses.py`: pose MAE, correlation, triplet, and bidirectional consistency losses.
+- `src/losses.py`: pose MAE, correlation, and triplet losses.
 
 ## Data and outputs
 
@@ -16,19 +16,35 @@ The release intentionally contains no machine-specific dataset, checkpoint, or o
 
 ## Training
 
+Run one of the two direct 200-epoch truncations:
+
 ```bash
 python src/train.py \
   --data-root /path/to/tus_rec_dataset \
-  --run-dir /path/to/run \
+  --run-dir /path/to/no_mask_200 \
   --device cuda:0 \
   --devices 0 \
   --batch-size 8 \
-  --epochs 1000
+  --epochs 200 \
+  --enable-local-sacd
 ```
 
-The public training path keeps the pose, correlation, triplet, and optional bidirectional consistency objectives. Mask reconstruction loss is deliberately disconnected in this release: it contributes exactly zero and does not affect gradients. The masked cross architecture remains available only as an explicit model option for users who want to extend the objective.
+For the mask truncation, use a separate run directory and enable the mask cross block from the first epoch:
 
-Use `--enable-local-sacd` and `--enable-bidirectional-consistency` to enable those model components. Use `--enable-mask-cross` only when implementing a separate masked-objective experiment.
+```bash
+python src/train.py \
+  --data-root /path/to/tus_rec_dataset \
+  --run-dir /path/to/mask_200 \
+  --device cuda:0 \
+  --devices 0 \
+  --batch-size 8 \
+  --epochs 200 \
+  --enable-local-sacd \
+  --enable-mask-cross \
+  --stage2-start-epoch 0
+```
+
+Add `--enable-bidirectional-consistency` to either run when the bidirectional consistency term is part of the experiment. Keep the dataset split, seed, and loss configuration fixed so the two checkpoints are directly comparable.
 
 ## Inference
 

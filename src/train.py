@@ -41,7 +41,7 @@ from losses import MoGLoLoss_Wrapper
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Full progressive training for the local MyNet on TUS-REC style H5 scans."
+        description="Full progressive training for the local SCC-Net on TUS-REC style H5 scans."
     )
     parser.add_argument("--data-root", default="")
     parser.add_argument(
@@ -65,7 +65,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seq-len", type=int, default=5)
     parser.add_argument("--image-size", type=int, default=256)
     parser.add_argument("--batch-size", type=int, default=8)
-    parser.add_argument("--epochs", type=int, default=1000)
+    parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--num-workers", type=int, default=8)
     parser.add_argument("--optimizer", choices=["adam", "adamw"], default="adamw")
     parser.add_argument("--lr", type=float, default=1e-4)
@@ -105,8 +105,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--stage2-start-epoch",
         type=int,
-        default=500,
-        help="Epoch index that activates mask cross. 500 means mask starts at epoch 501.",
+        default=0,
+        help="When --enable-mask-cross is set, the mask cross block is active from epoch 1.",
     )
     parser.add_argument(
         "--force-stage2-lr-schedule",

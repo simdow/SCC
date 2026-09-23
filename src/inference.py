@@ -32,7 +32,7 @@ from model import MyNet
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Run full-sequence inference for the local MyNet model."
+        description="Run full-sequence inference for the SCC-Net model."
     )
     parser.add_argument("--data-root", default="")
     parser.add_argument(
