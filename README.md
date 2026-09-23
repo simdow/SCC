@@ -38,7 +38,7 @@ Supply the six positive label scales used by the checkpoint. A scale file may co
 
 ## Training
 
-Install dependencies from `requirements.txt` in your own environment. Expose one GPU. Start from random initialization with one continuous 100+100-epoch run:
+Install dependencies from `requirements.txt` in your own environment. Expose one GPU. Start training from random initialization:
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 python -m src.train \
@@ -48,9 +48,9 @@ CUDA_VISIBLE_DEVICES=0 python -m src.train \
   --epochs 200 --mask-start 100 --batch-size 8
 ```
 
-For a continuous 200+200 schedule, use `--epochs 400 --mask-start 200`. The main network remains active across the boundary; optimizer state is retained. Adam uses learning rate 1e-4 and StepLR(100, 0.8). FP32 training disables TF32. Ten randomly sampled windows per training scan are scheduled each epoch. Reverse supervision uses inverses of the reversed sequence of relative transforms.
+The main network remains active throughout training. The auxiliary branch is enabled at the configured boundary while retaining the optimizer state. Adam uses a learning rate of 1e-4. Training uses FP32 with TF32 disabled, random training windows, and reverse supervision constructed from inverse relative transforms.
 
-`last.pt` is written atomically after each epoch; periodic and stage-boundary checkpoints are also retained. `best.pt` is selected by fixed-window validation pose loss, not test FDR. To continue an interrupted run, add `--resume /path/to/run/last.pt` with the same experiment configuration. Historical experiment checkpoints are supported for model inference, but their optimizer/RNG formats are not accepted by this new training entry point.
+Checkpoints retain model, optimizer, scheduler, and random states. `best.pt` is selected by fixed-window validation pose loss. Resume an interrupted run by adding `--resume /path/to/run/last.pt` with the same experiment configuration.
 
 ## Inference
 
@@ -63,10 +63,6 @@ CUDA_VISIBLE_DEVICES=0 python -m src.inference \
 
 Five-frame windows use stride four and retain all adjacent predictions. A final overlapping window covers the tail, with duplicate predictions trimmed. The checkpoint contains label scale; use `--scale-path` only when a separate scale is required. Outputs include per-scan predictions, per-scan metrics and equal-scan mean/SD. SD is population standard deviation across scans (ddof=0), not standard error or variance. RTE is adjacent-step translation error; RRE is geodesic rotation error in degrees. FDR is final-position error divided by reference path length, computed per scan before averaging. No trajectory fitting is applied.
 
-## Provenance And Validation
+## Attribution
 
-This source supersedes the earlier Stage2-based release, which did not match the evaluated temporal workflow. The restored LSTM architecture strictly loads all 310 state entries of the control epoch226 checkpoint. On a fixed real five-frame window, its forward heads, reverse heads and fused features match the archived training implementation exactly in FP32. The single-sided auxiliary test confirms zero encoder gradient and finite nonzero CrossBlock/LSTM gradients.
-
-The historical 6.85058% FDR is a retrospective best on 240 test scans, not a validation-selected estimate. Restoring the architecture does not make that number a new independent result. The training CLI is a portable fresh-run implementation, not a byte-for-byte recreation of the original continuation and checkpoint-selection history. The standalone inference CLI has an explicit FP32/geodesic-RRE protocol; re-evaluate all compared methods under a common protocol before comparing its numbers with historical tables.
-
-The backbone and original pose-loss components derive from the project's archived MoGLo implementation. Preserve upstream attribution and applicable licensing when redistributing. No checkpoint, dataset, server credential or machine-specific data path is included. ConvLSTM is a separate experimental design and is not enabled in this release.
+The backbone and pose-loss components derive from MoGLo. Preserve upstream attribution and applicable licensing when redistributing. This release uses LSTM temporal heads.
