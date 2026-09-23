@@ -44,8 +44,8 @@ Install dependencies from `requirements.txt` in your own environment. Expose one
 CUDA_VISIBLE_DEVICES=0 python -m src.train \
   --data-root /path/to/dataset \
   --scale-path /path/to/training_scale.pt \
-  --run-dir /path/to/new_run \
-  --epochs 200 --mask-start 100 --batch-size 8
+  --run-dir /path/to/new_run
+
 ```
 
 The main network remains active throughout training. The auxiliary branch is enabled at the configured boundary while retaining the optimizer state. Adam uses a learning rate of 1e-4. Training uses FP32 with TF32 disabled, random training windows, and reverse supervision constructed from inverse relative transforms.
