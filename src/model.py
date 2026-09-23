@@ -93,7 +93,7 @@ class TemporalC0Workflow(nn.Module):
         super().__init__()
         self.legacy = backbone
         self.legacy.corr_operation = corr_operation
-        self.backbone = self.legacy.MoGLo_Net(dim_in=1)
+        self.backbone = self.legacy.SCCBackbone(dim_in=1)
         install_vectorized_patches(self)
         self.backbone.att.vectorized_patches = True
         self.frequency = FrequencyFeatureInjection()

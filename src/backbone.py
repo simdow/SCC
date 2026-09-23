@@ -280,7 +280,7 @@ class Corr_block(nn.Module):
         cv = self.upsample(cv)
         return cv
 
-class MoGLo_Net(nn.Module):
+class SCCBackbone(nn.Module):
 
     def __init__(self, dim_in=1, dim_base=64, shape=False, c_att=True, gl_att=True):
         super().__init__()
