@@ -1,5 +1,7 @@
 # SCC-Net
 
+SCC-Net estimates adjacent ultrasound motion from short frame sequences with spatial-temporal feature modeling.
+
 ## Data
 
 Provide the dataset and label-scale file explicitly. Each subject directory contains H5 scans with:
@@ -23,3 +25,5 @@ CUDA_VISIBLE_DEVICES=0 python -m src.train   --data-root /path/to/dataset   --sc
 ```bash
 CUDA_VISIBLE_DEVICES=0 python -m src.inference   --data-root /path/to/dataset   --checkpoint /path/to/run/best.pt   --output-dir /path/to/new_inference
 ```
+
+Inference uses five-frame windows with stride four and reports scan-level motion metrics.
