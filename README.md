@@ -4,12 +4,13 @@ Sensorless ultrasound motion estimation with frequency feature injection and bid
 
 ## Architecture
 
-Five grayscale frames form four consecutive frame pairs. The shared encoder produces image features and the original no-gradient correlation volume. Low/high-frequency channel and spatial attention inject a residual into the image features. Correlation enters the local fusion and global encoder paths. Local/global attention produces two sequences of 4 x 4 spatial tokens. SequenceCross exchanges local/global information across the forward and reversed sequences. Each stream is spatially averaged, processed by its own LSTM and linear pose head, and the two predictions are averaged.
+Five grayscale frames form four consecutive frame pairs. The shared encoder produces image features and the original no-gradient correlation volume. Low/high-frequency channel and spatial attention inject a residual into the image features. Correlation enters the local fusion and global encoder paths. Local/global attention produces two sequences of 4 x 4 spatial tokens. SequenceCross exchanges local/global information across the forward and reversed sequences. Each stream is processed by an independent 512-channel ConvLSTM with 3 x 3 gates over the 4 x 4 spatial grid. The recurrent features are spatially pooled and passed to linear pose heads; the two predictions are averaged.
 
 Cross attention remains active during both training stages and inference. After the first training stage, an auxiliary branch masks only forward tokens and uses clean reverse tokens as reference. Both auxiliary inputs are detached; the branch shares the cross-attention module and pose heads. The objective uses pose MAE, correlation, and triplet losses. The default auxiliary coefficient is 0.05. There is no image-reconstruction objective in this training entry point.
 
 ## Layout
 
+- `src/convlstm.py`: convolutional recurrent cells and spatial sequence processing.
 - `src/model.py`: SCC-Net sequence interaction and single-sided auxiliary branch.
 - `src/backbone.py`: MoGLo-derived encoders and local/global attention.
 - `src/frequency.py`: frequency decomposition and feature injection.
@@ -65,4 +66,4 @@ Five-frame windows use stride four and retain all adjacent predictions. A final 
 
 ## Attribution
 
-The backbone and pose-loss components derive from MoGLo. Preserve upstream attribution and applicable licensing when redistributing. This release uses LSTM temporal heads.
+The backbone and pose-loss components derive from MoGLo. Preserve upstream attribution and applicable licensing when redistributing. This release uses ConvLSTM temporal heads.

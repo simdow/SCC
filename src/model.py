@@ -6,6 +6,7 @@ from . import backbone
 from .correlation import corr_operation
 from .spatial_attention import install_vectorized_patches
 from .frequency import FrequencyFeatureInjection
+from .convlstm import ConvLSTMSequence, spatial_sequence
 
 def sinusoid(values, width):
     rates = torch.exp(torch.arange(0, width, 2, device=values.device, dtype=values.dtype) * (-math.log(10000.0) / width))
@@ -110,6 +111,10 @@ class TemporalC0Workflow(nn.Module):
         self.reconstruction = nn.Linear(512, 32 * 32)
         self.trace = {}
         self.record_trace = False
+        del self.backbone.lstm_L
+        del self.backbone.lstm_G
+        self.temporal_local = ConvLSTMSequence(512)
+        self.temporal_global = ConvLSTMSequence(512)
 
     def capture(self, name, value):
         if self.record_trace:
@@ -141,11 +146,13 @@ class TemporalC0Workflow(nn.Module):
         return (tokens, score)
 
     def decode(self, tokens):
-        (local, global_) = tokens
-        features = torch.cat([v.reshape(-1, 16, 512).transpose(1, 2).reshape(-1, 512, 4, 4) for v in tokens], 1)
-        pl = self.backbone.fc_L(self.backbone.lstm_L(local.mean(2))[0])
-        pg = self.backbone.fc_G(self.backbone.lstm_G(global_.mean(2))[0])
-        return ([pl, pg], features)
+        local, global_ = (spatial_sequence(v) for v in tokens)
+        features = torch.cat([v.reshape(-1,512,4,4) for v in (local,global_)],1)
+        local, _ = self.temporal_local(local)
+        global_, _ = self.temporal_global(global_)
+        local_pose = self.backbone.fc_L(local.mean((-2,-1)))
+        global_pose = self.backbone.fc_G(global_.mean((-2,-1)))
+        return [local_pose,global_pose], features
 
     @staticmethod
     def mask_weight(epoch):
